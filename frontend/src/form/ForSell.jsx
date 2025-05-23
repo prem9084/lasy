@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { FaCamera } from "react-icons/fa";
 import { MdCameraEnhance } from "react-icons/md";
+import { toast } from "react-toastify";
 const ForSell = () => {
   const [activeOption, setActiveOption] = useState("");
   const [bhk, setBhk] = useState("");
@@ -17,6 +18,62 @@ const ForSell = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [name, setName] = useState("PREM SHAKYA");
   const [phone, setPhone] = useState("");
+  const [titleError, setTitleError] = useState(false);
+  const [addTitle, setAddTitle] = useState("");
+  const [titleTouch, setTitleTouch] = useState(false);
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
+  const [desError, setDesError] = useState("");
+  const [touched, setTouched] = useState(false);
+  const [dropsown, setDropDown] = useState("");
+  const fileInputRef = useRef(null);
+  const [photos, setPhotos] = useState([]);
+  const [coverIndex, setCoverIndex] = useState(null);
+  const [floor, setFloor] = useState("");
+  const [totalFloor, setTotalFloor] = useState("");
+  const [bathroomError, setBathroomError] = useState("");
+  const [bHKerror, setBHKError] = useState("");
+  const [maintanace, setMaintanace] = useState("");
+  const BHKData = ["1", "2", "3", "4", "4+"];
+  const BathroomData = ["1", "2", "3", "4", "4+"];
+  const CraParkingData = ["0", "1", "2", "3+"];
+  const FurnishingData = ["Furnished", "Semi-Furnished", "Unfurnished"];
+  const [projectName, setProjectName] = useState("");
+  const isValidForm = () => {
+    return (
+      activeOption.trim() &&
+      bhk.trim() &&
+      bathroom.trim() &&
+      name.trim() &&
+      phone &&
+      addTitle.trim() &&
+      description.trim() &&
+      state.trim() &&
+      carParking.trim() &&
+      profileImage &&
+      price.trim() &&
+      furnishing.trim() &&
+      photos.length > 0 &&
+      dropsown.trim() &&
+      floor.trim() &&
+      superBuiltup.trim() &&
+      projectStatus.trim() &&
+      totalFloor.trim() &&
+      carpetArea.trim() &&
+      listedBy.trim() &&
+      maintanace.trim() &&
+      projectName.trim()
+    );
+  };
+
+  const validatePhone = (value) => {
+    const isTenDigits = /^[0-9]{10}$/.test(value);
+    const isNotRepeating = !/^(\d)\1{9}$/.test(value); // not all digits same
+    return isTenDigits && isNotRepeating;
+  };
+
+  const isValid = validatePhone(phone);
+  const showError = phone.length > 0 && !isValid;
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -70,15 +127,10 @@ const ForSell = () => {
     "Delhi",
   ];
 
-  const [dropsown, setDropDown] = useState("");
-
   {
     /* Images */
   }
 
-  const fileInputRef = useRef(null);
-  const [photos, setPhotos] = useState([]);
-  const [coverIndex, setCoverIndex] = useState(null);
   const MAX_PHOTOS = 20;
   const handlePhotoUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -197,24 +249,9 @@ const ForSell = () => {
     "House & Villa",
   ];
 
-  const BHKData = ["1", "2", "3", "4", "4+"];
-  const BathroomData = ["1", "2", "3", "4", "4+"];
-  const CraParkingData = ["0", "1", "2", "3+"];
-  const FurnishingData = ["Furnished", "Semi-Furnished", "Unfurnished"];
-  const [projectName, setProjectName] = useState("");
-
   {
     /* Add title */
   }
-  const [titleError, setTitleError] = useState(false);
-  const [addTitle, setAddTitle] = useState("");
-  const [titleTouch, setTitleTouch] = useState(false);
-  {
-    /* for description */
-  }
-  const [description, setDescription] = useState("");
-  const [desError, setDesError] = useState("");
-  const [touched, setTouched] = useState(false);
 
   const DesMaxLength = 4096;
   const maxLength = 70;
@@ -298,23 +335,20 @@ const ForSell = () => {
     setDesError(validate(description));
   };
 
-  const isValidForm = activeOption && bhk;
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
     // Check if an option is selected
     if (!activeOption) {
-      setError("Please select a property type.");
-      return;
+      return "";
     }
 
     if (!isValidForm) {
-      setError("Please fill in all fields.");
-      return;
+      return "";
     }
 
     setError("");
+    toast.success("Post Submited");
     console.log("Selected Option:", activeOption);
   };
 
@@ -344,7 +378,7 @@ const ForSell = () => {
             </div>
             <hr />
 
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="p-5 w-100 lg:w-200">
                 <h1 className="text-lg font-bold">INCLIDE SOME DETAILS</h1>
                 <div className="mt-3">
@@ -392,10 +426,10 @@ const ForSell = () => {
                         onClick={() => {
                           if (bhk === option) {
                             setBhk("");
-                            setError("Please select a property type.");
+                            setBHKError("Please select a property type.");
                           } else {
                             setBhk(option);
-                            setError("");
+                            setBHKError("");
                           }
                         }}
                         className={`border rounded p-2 w-15 text-center cursor-pointer transition-all duration-200 hover:bg-blue-200 ${
@@ -420,10 +454,12 @@ const ForSell = () => {
                           onClick={() => {
                             if (bathroom === option) {
                               setBathroom("");
-                              setError("Please select a property type.");
+                              setBathroomError(
+                                "Please select a property type."
+                              );
                             } else {
                               setBathroom(option);
-                              setError("");
+                              setBathroomError("");
                             }
                           }}
                           className={`border rounded p-2 w-15 text-center cursor-pointer transition-all duration-200 hover:bg-blue-200 ${
@@ -610,6 +646,8 @@ const ForSell = () => {
                     <p>Maintenance (Monthly)</p>
                     <input
                       type="number"
+                      value={maintanace}
+                      onChange={(e) => setMaintanace(e.target.value)}
                       className="w-full p-2 border no-spinner rounded"
                     />
                   </div>
@@ -619,6 +657,8 @@ const ForSell = () => {
                     <p>Total Floors</p>
                     <input
                       type="number"
+                      value={totalFloor}
+                      onChange={(e) => setTotalFloor(e.target.value)}
                       name=""
                       id=""
                       className="w-full p-2 border no-spinner rounded"
@@ -629,6 +669,8 @@ const ForSell = () => {
                   <div>
                     <p>Floor No.</p>
                     <input
+                      value={floor}
+                      onChange={(e) => setFloor(e.target.value)}
                       type="number"
                       name=""
                       id=""
@@ -794,6 +836,8 @@ const ForSell = () => {
 
                     <input
                       type="number"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
                       className="w-full p-2 pl-10 border rounded no-spinner lg:w-100"
                       placeholder="Enter amount"
                     />
@@ -965,20 +1009,39 @@ const ForSell = () => {
                     We will send you a confirmation code by SMS on the next
                     step.
                   </h3>
-                  <label className="text-sm font-medium block mb-1">
+
+                  <label
+                    className={`text-sm font-medium block mb-1 ${
+                      showError ? "text-red-500" : ""
+                    }`}
+                  >
                     Mobile Phone Number *
                   </label>
-                  <div className="flex">
-                    <span className="px-3 py-2 border border-r-0 border-gray-300 bg-gray-100 rounded-l text-gray-600">
-                      +91
-                    </span>
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full border border-gray-300 p-2 rounded-r"
-                      placeholder="Enter phone number"
-                    />
+
+                  <div className="w-full max-w-md">
+                    <div className="flex">
+                      <span className="px-3 py-2 border border-r-0 border-gray-300 bg-gray-100 rounded-l text-gray-600">
+                        +91
+                      </span>
+                      <input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className={`w-full border p-2 rounded-r text-sm outline-none ${
+                          showError
+                            ? "border-red-500 text-red-500"
+                            : "border-gray-300 text-black"
+                        }`}
+                        placeholder="Enter phone number"
+                      />
+                    </div>
+
+                    {showError && (
+                      <p className="mt-1 text-sm text-red-500">
+                        Please enter a valid 10-digit phone number (not all same
+                        digits).
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -987,11 +1050,10 @@ const ForSell = () => {
 
               <hr />
               <div className="p-5">
-                {isValidForm ? (
+                {isValidForm() ? (
                   <button
                     type="submit"
-                    onClick={handleSubmit}
-                    className="px-4 py-2 bg-blue-600 text-white font-bold rounded w-25 h-15"
+                    className="px-4 py-2 bg-blue-600 text-white font-bold rounded w-25 h-15 cursor-pointer"
                   >
                     Post Now
                   </button>
